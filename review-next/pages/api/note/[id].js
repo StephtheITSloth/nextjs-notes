@@ -1,28 +1,54 @@
-import notes from '../../../src/data/data'
 import nc from 'next-connect'
+import notes from '../../../src/data/data'
 
-const getNote = id => notes.find(n => n.id === parseInt(id))
+
+const getNote = id => notes.find(note => note.id === parseInt(id))
 
 
 const handler = nc()
+.get((req,res) => {
+    const note = getNote(req.query.id)
 
-.get((req, res) => {
-    const {id} =  req.query
-
-    try{
-        
-        const note = notes.filter(note => note.id = requestId)
-        res.status(200)
-        res.json({data: note})
-    }
-    catch (e) {
-        res.status(404)
-        console.error(e)
+    if(!note){
+        res.status(400)
+        res.json({message: 'invalid id'})
         res.end()
-    
+        return
     }
+
+    res.json({data: note})
 })
 
-.put()
+.put((req,res) => {
+    const note = getNote(req.query.id)
+
+    if(!getNote(id)){
+        res.status(404)
+        res.json({message: 'invalid id'})
+        res.end()
+        return
+    }
+
+    const i = notes.findIndex(note => note.id === parseInt(req.query.id))
+    const updated = [...note, ...req.body]
+
+    notes[i] = updated
+    res.json({data: updated})
+})
+
+.delete((req,res) => {
+    const note = getNote(req.query.id)
+
+    if(!note){
+        res.status(404)
+        res.end()
+        return
+    }
+
+    const i = notes.findIndex(n => n.id === parseInt(req.query.id))
+    notes.splice(i,1)
+
+    res.json({data: req.query.id})
+})
 
 export default handler
